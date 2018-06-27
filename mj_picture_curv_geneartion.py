@@ -63,8 +63,9 @@ class PictureCurve():
                     pass
         print("Number of Salt Points = "+str(salt_cnt))
         print("Salt Point Deleted")
+        cv2.imwrite('image_phase_before.jpg', self.img_gray)
         #self.thinLineDetector()
-        self.eraseSmallBlob(self.img)
+        self.eraseSmallBlob(self.img_gray)
         print(self.img.shape)
         cv2.imwrite('image_phase.jpg', self.img_gray)
 
@@ -101,42 +102,46 @@ class PictureCurve():
         return sum(p[:num])
     
     def eraseSmallBlob(self, img):
-        print("DEBUG-0")
         img_copy=copy.deepcopy(img)
+        print(img_copy[20])
         for i in range(len(img)):
-            print("DEBUG-1")
             for j in range(len(img[i])):
-                print(img[i][j])
-                if img[i][j]!=0:
+                if img_copy[i][j]<220:
+                    print("i,j:", i, j)
                     checkList=[[i,j]]
                     tmpList=[[i,j]]
                     elemCnt=0
-                    print("DEBUG-2")
-                    while len(checkList) !=0:
+                    img_copy[i][j]=255
+                    while len(checkList)!=0:
                         a,b=checkList[0]
-                        print("DEBUG-3")
-                        if img_copy[a+1][b]!=255:
+                        if a+1<len(img_copy) and img_copy[a+1][b]<220:
+                            print("a", a+1, b)
                             checkList.append([a+1, b])
+                            tmpList.append([a+1, b])
                             elemCnt=elemCnt+1
-                            img_copy[a+1][b]=0
-                            print("DEBUG-4")
-                        if img_copy[a-1][b]!=255:
+                            img_copy[a+1][b]=255
+                        if a>0 and img_copy[a-1][b]<220:
+                            print("b", a-1, b)
                             checkList.append([a-1,b])
+                            tmpList.append([a-1, b])
                             elemCnt=elemCnt+1
-                            img_copy[a-1][b]=0
-                        if img_copy[a][b+1]!=255:
+                            img_copy[a-1][b]=255
+                        if b+1<len(img_copy[a]) and img_copy[a][b+1]<220:
+                            print("c", a, b+1)
                             checkList.append([a,b+1])
+                            tmpList.append([a, b+1])
                             elemCnt=elemCnt+1
-                            img_copy[a][b+1]=0
-                        if img_copy[a][b-1]!=255:
+                            img_copy[a][b+1]=255
+                        if b>0 and img_copy[a][b-1]<220:
+                            print("d", a, b-1)
                             checkList.append([a,b-1])
+                            tmpList.append([a, b-1])
                             elemCnt=elemCnt+1
-                            img_copy[a][b-1]=0
+                            img_copy[a][b-1]=255
                         checkList=checkList[1:]
                         elemCnt=elemCnt+1
-                        if elemCnt>50:
-                            break
-                    if elemCnt<=50:
+                    print(elemCnt)
+                    if elemCnt<50:
                         for a,b in tmpList:
                             img[a][b]=255
                             
