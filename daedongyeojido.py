@@ -8,23 +8,22 @@ import cv2
 from matplotlib import pyplot as plt
 import copy
 
+directory="./Daedongyeojido/"
+
 class PictureCurve():
     def __init__(self):
-        self.img = cv2.imread("image_edge2.jpg", cv2.IMREAD_COLOR)
+        self.img = cv2.imread(directory+"Daedongyeojido-full.jpg", cv2.IMREAD_COLOR)
         self.y_size, self.x_size = self.img.shape[:2]
-        self.y_size=(int)(self.y_size/5)
-        self.x_size=(int)(self.x_size/5)
-        self.img = cv2.resize(self.img,(self.x_size, self.y_size), interpolation=cv2.INTER_AREA)
         self.img_gray = cv2.cvtColor(self.img, cv2.COLOR_BGR2GRAY)
         self.save_img=copy.deepcopy(self.img_gray)
         print(self.x_size, self.y_size)
-        cv2.imwrite("image_resize.jpg", self.img_gray)
+        cv2.imwrite(directory+"map_gray.jpg", self.img_gray)
 
         self.img_data = []
         for i in range(len(self.img_gray)):
             row_data = []
             for j in range(len(self.img_gray[i])):
-                if self.img_gray[i][j]>=128:
+                if self.img_gray[i][j]>=200:
                     row_data.append(1)
                 else:
                     row_data.append(0)
@@ -40,7 +39,7 @@ class PictureCurve():
         for i in range(len(self.img_data)):
            for j in range(len(self.img_data[i])):
                if self.img_data[i][j]==1:
-                   if self.connect(4, i, j)>2:
+                   if self.connect(8, i, j)>=6:
                        branch_cnt = branch_cnt+1
                        self.img_data[i][j]=1
                        self.img_gray[i][j]=255
@@ -48,6 +47,8 @@ class PictureCurve():
                    pass
         print("Number of Branch Points = "+str(branch_cnt))
         print("Branch Point Deleted")
+
+        cv2.imwrite(directory+"branch_removed.jpg", self.img_gray)
 
 	    #salt point
         salt_cnt=0
@@ -65,9 +66,9 @@ class PictureCurve():
         print("Salt Point Deleted")
         cv2.imwrite('image_phase_before.jpg', self.img_gray)
         #self.thinLineDetector()
-        self.eraseSmallBlob(self.img_gray)
+        #self.eraseSmallBlob(self.img_gray)
         print(self.img.shape)
-        cv2.imwrite('image_phase.jpg', self.img_gray)
+        cv2.imwrite(directory+'salt_removed.jpg', self.img_gray)
 
     def connect(self, num, i, j):
         if i==0 or j==0 or i==self.y_size-1 or j==self.x_size-1:
