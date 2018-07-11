@@ -8,11 +8,11 @@ import cv2
 from matplotlib import pyplot as plt
 import copy
 
-directory="./Daedongyeojido/"
+directory="./daedongyeojido/"
 
 class PictureCurve():
     def __init__(self):
-        self.img = cv2.imread(directory+"Daedongyeojido-full.jpg", cv2.IMREAD_COLOR)
+        self.img = cv2.imread("Daedongyeojido-full.jpg", cv2.IMREAD_COLOR)
         self.y_size, self.x_size = self.img.shape[:2]
         self.img_gray = cv2.cvtColor(self.img, cv2.COLOR_BGR2GRAY)
         self.save_img=copy.deepcopy(self.img_gray)
@@ -34,8 +34,6 @@ class PictureCurve():
     def generate(self):
 		#branch point
         branch_cnt = 0
-        print(len(self. img_data))
-     	print(len(self.img_data[0]))
         for i in range(len(self.img_data)):
            for j in range(len(self.img_data[i])):
                if self.img_data[i][j]==1:
@@ -50,7 +48,15 @@ class PictureCurve():
 
         cv2.imwrite(directory+"branch_removed.jpg", self.img_gray)
 
-	    #salt point
+
+
+        #self.thinLineDetector()
+        for i in range(len(self.img_data)):
+            for j in range(len(self.img_data[i])):
+                if self.img_gray[i][j]>150:
+                    self.img_gray[i][j]=255
+
+        #salt point
         salt_cnt=0
         for i in range(len(self.img_data)):
             for j in range(len(self.img_data[i])):
@@ -64,11 +70,13 @@ class PictureCurve():
                     pass
         print("Number of Salt Points = "+str(salt_cnt))
         print("Salt Point Deleted")
-        cv2.imwrite('image_phase_before.jpg', self.img_gray)
-        #self.thinLineDetector()
-        #self.eraseSmallBlob(self.img_gray)
-        print(self.img.shape)
-        cv2.imwrite(directory+'salt_removed.jpg', self.img_gray)
+
+
+        self.eraseSmallBlob(self.img_gray[259:266],20)
+
+
+        cv2.imwrite(directory+'threshold3.jpg', self.img_gray)
+
 
     def connect(self, num, i, j):
         if i==0 or j==0 or i==self.y_size-1 or j==self.x_size-1:
@@ -102,9 +110,8 @@ class PictureCurve():
 
         return sum(p[:num])
     
-    def eraseSmallBlob(self, img):
+    def eraseSmallBlob(self, img, maxNum):
         img_copy=copy.deepcopy(img)
-        print(img_copy[20])
         for i in range(len(img)):
             for j in range(len(img[i])):
                 if img_copy[i][j]<220:
@@ -116,33 +123,29 @@ class PictureCurve():
                     while len(checkList)!=0:
                         a,b=checkList[0]
                         if a+1<len(img_copy) and img_copy[a+1][b]<220:
-                            print("a", a+1, b)
+                            print("a", a+1, b, elemCnt)
                             checkList.append([a+1, b])
                             tmpList.append([a+1, b])
-                            elemCnt=elemCnt+1
                             img_copy[a+1][b]=255
                         if a>0 and img_copy[a-1][b]<220:
-                            print("b", a-1, b)
+                            print("b", a-1, b, elemCnt)
                             checkList.append([a-1,b])
                             tmpList.append([a-1, b])
-                            elemCnt=elemCnt+1
                             img_copy[a-1][b]=255
                         if b+1<len(img_copy[a]) and img_copy[a][b+1]<220:
-                            print("c", a, b+1)
+                            print("c", a, b+1, elemCnt)
                             checkList.append([a,b+1])
                             tmpList.append([a, b+1])
-                            elemCnt=elemCnt+1
                             img_copy[a][b+1]=255
                         if b>0 and img_copy[a][b-1]<220:
-                            print("d", a, b-1)
+                            print("d", a, b-1, elemCnt)
                             checkList.append([a,b-1])
                             tmpList.append([a, b-1])
-                            elemCnt=elemCnt+1
                             img_copy[a][b-1]=255
                         checkList=checkList[1:]
                         elemCnt=elemCnt+1
                     print(elemCnt)
-                    if elemCnt<50:
+                    if elemCnt<maxNum:
                         for a,b in tmpList:
                             img[a][b]=255
                             
