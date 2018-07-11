@@ -72,7 +72,7 @@ class PictureCurve():
         print("Salt Point Deleted")
 
 
-        self.eraseSmallBlob(self.img_gray[259:266],20)
+        self.eraseSmallBlob(self.img_gray,7)
 
 
         cv2.imwrite(directory+'threshold3.jpg', self.img_gray)
@@ -115,7 +115,6 @@ class PictureCurve():
         for i in range(len(img)):
             for j in range(len(img[i])):
                 if img_copy[i][j]<220:
-                    print("i,j:", i, j)
                     checkList=[[i,j]]
                     tmpList=[[i,j]]
                     elemCnt=0
@@ -123,28 +122,23 @@ class PictureCurve():
                     while len(checkList)!=0:
                         a,b=checkList[0]
                         if a+1<len(img_copy) and img_copy[a+1][b]<220:
-                            print("a", a+1, b, elemCnt)
                             checkList.append([a+1, b])
                             tmpList.append([a+1, b])
                             img_copy[a+1][b]=255
                         if a>0 and img_copy[a-1][b]<220:
-                            print("b", a-1, b, elemCnt)
                             checkList.append([a-1,b])
                             tmpList.append([a-1, b])
                             img_copy[a-1][b]=255
                         if b+1<len(img_copy[a]) and img_copy[a][b+1]<220:
-                            print("c", a, b+1, elemCnt)
                             checkList.append([a,b+1])
                             tmpList.append([a, b+1])
                             img_copy[a][b+1]=255
                         if b>0 and img_copy[a][b-1]<220:
-                            print("d", a, b-1, elemCnt)
                             checkList.append([a,b-1])
                             tmpList.append([a, b-1])
                             img_copy[a][b-1]=255
                         checkList=checkList[1:]
                         elemCnt=elemCnt+1
-                    print(elemCnt)
                     if elemCnt<maxNum:
                         for a,b in tmpList:
                             img[a][b]=255

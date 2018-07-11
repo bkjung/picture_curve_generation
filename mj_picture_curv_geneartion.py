@@ -118,25 +118,21 @@ class PictureCurve():
                             print("a", a+1, b)
                             checkList.append([a+1, b])
                             tmpList.append([a+1, b])
-                            elemCnt=elemCnt+1
                             img_copy[a+1][b]=255
                         if a>0 and img_copy[a-1][b]<220:
                             print("b", a-1, b)
                             checkList.append([a-1,b])
                             tmpList.append([a-1, b])
-                            elemCnt=elemCnt+1
                             img_copy[a-1][b]=255
                         if b+1<len(img_copy[a]) and img_copy[a][b+1]<220:
                             print("c", a, b+1)
                             checkList.append([a,b+1])
                             tmpList.append([a, b+1])
-                            elemCnt=elemCnt+1
                             img_copy[a][b+1]=255
                         if b>0 and img_copy[a][b-1]<220:
                             print("d", a, b-1)
                             checkList.append([a,b-1])
                             tmpList.append([a, b-1])
-                            elemCnt=elemCnt+1
                             img_copy[a][b-1]=255
                         checkList=checkList[1:]
                         elemCnt=elemCnt+1
