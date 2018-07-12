@@ -1,0 +1,54 @@
+#!/usr/bin/env python
+
+'''
+This sample demonstrates Canny edge detection.
+Usage:
+  edge.py [<video source>]
+  Trackbars control edge thresholds.
+'''
+
+# Python 2/3 compatibility
+from __future__ import print_function
+
+import cv2 as cv
+import numpy as np
+
+# relative module
+import video
+
+# built-in module
+import sys
+
+
+if __name__ == '__main__':
+    print(__doc__)
+
+    try:
+        fn = sys.argv[1]
+    except:
+        fn = 0
+
+    def nothing(*arg):
+        pass
+
+
+    filename=raw_input("File Name?")
+    filename="./"+filename
+    print(filename)
+    img=cv.imread(filename)
+    cv.namedWindow('edge')
+    cv.createTrackbar('thrs1', 'edge', 2000, 5000, nothing)
+    cv.createTrackbar('thrs2', 'edge', 4000, 5000, nothing)
+    while True:
+        gray = cv.cvtColor(img, cv.IMREAD_GRAYSCALE)
+        thrs1 = cv.getTrackbarPos('thrs1', 'edge')
+        thrs2 = cv.getTrackbarPos('thrs2', 'edge')
+        edge = cv.Canny(gray, thrs1, thrs2, apertureSize=5)
+        vis = img.copy()
+        vis = np.uint8(vis/2.)
+        vis[edge != 0] = (0, 255, 0)
+        cv.imshow('edge', vis)
+        ch = cv.waitKey(5)
+        if ch == 27:
+            break
+    cv.destroyAllWindows()
